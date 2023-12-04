@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
 
-import re
-
 def print_grid(grid):
     for row in grid:
         print(row)
