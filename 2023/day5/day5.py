@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 from copy import deepcopy as dc
-import sys
 
 def process_seed(seed, map):
     for m in map:
