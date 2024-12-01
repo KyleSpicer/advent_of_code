@@ -1,0 +1,40 @@
+# Configuration File for Pre-Commit Hooks
+
+repos:
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v4.4.0
+  hooks:
+  - id: check-merge-conflict
+  - id: check-yaml
+  - id: end-of-file-fixer
+  - id: mixed-line-ending
+  - id: trailing-whitespace
+
+##### C Hooks
+
+# Clang-Format
+- repo: https://github.com/pre-commit/mirrors-clang-format
+  rev: v17.0.4
+  hooks:
+  - id: clang-format
+    args: ['--style=file']
+
+##### Python Hooks
+
+# iSort - sorts python imports
+- repo: https://github.com/pycqa/isort
+  rev: 5.12.0
+  hooks:
+    - id: isort
+
+# Black - python code formatter
+- repo: https://github.com/psf/black
+  rev: 23.9.1
+  hooks:
+    - id: black
+
+# Bandit - Python security linter
+- repo: https://github.com/PyCQA/bandit
+  rev: 1.7.5
+  hooks:
+    - id: bandit
