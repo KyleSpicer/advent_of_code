@@ -31,7 +31,6 @@ def is_valid_instruction(instruction):
 
     if len(temp) != 2:
         return None, False
-
     return temp, True
 
 
