@@ -6,6 +6,8 @@ SAMPLE_2_FILE = "12345.txt"
 
 from copy import copy
 
+is_part_two = False
+
 
 def shift_disk(file_sys):
     back_ptr = len(file_sys) - 1
@@ -57,7 +59,56 @@ def part_one(disk_map):
 
 
 def part_two(disk_map):
-    return 0
+    disk_map = list(map(int, disk_map))
+
+    files = {}  # file_id : (index, size)
+    spaces = []
+    is_file = True
+    ptr = 0
+
+    # stores starting index and size of current chunk
+    for i, size in enumerate(disk_map):
+        if is_file:
+            files[i // 2] = (ptr, size)
+        else:
+            spaces.append((ptr, size))
+        is_file = not is_file  # alternate between files and spaces
+        ptr += size
+
+    # iter over files in reverse order
+    for file_id in reversed(files):
+        loc, file_size = files[file_id]
+        space_id = 0
+
+        # loop over spaces
+        while space_id < len(spaces):
+            space_loc, space_size = spaces[space_id]
+            if space_loc > loc:
+                # skip spaces after current file location
+                break
+
+            if space_size == file_size:
+                # updates files dict, remove spaces from list
+                files[file_id] = (space_loc, file_size)
+                spaces.pop(space_id)
+                break
+
+            if space_size > file_size:
+                # relocate file to start of space, update spaces new remaining size
+                files[file_id] = (space_loc, file_size)
+                spaces[space_id] = (space_loc + file_size, space_size - file_size)
+                break
+
+            # checked entire space and it is too large, continue
+            space_id += 1
+
+    # calc checksum
+    checksum = 0
+    for file_id, (loc, size) in files.items():
+        for i in range(loc, loc + size):
+            checksum += file_id * i
+
+    return checksum
 
 
 def main():
