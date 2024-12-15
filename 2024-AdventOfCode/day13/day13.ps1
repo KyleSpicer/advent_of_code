@@ -3,10 +3,11 @@ $Data = Get-Content -Path C:\Users\kyled\Desktop\github\advent_of_code\2024-Adve
 #$Data.GetType()
 #$Data
 
-# array for config data
-$completed_configs = @()
-$coordinates = @()
+# temp hash table for each game
+$game = @{}
 
+$game_count = 0
+$total_button_presses = 0
 
 foreach($line in $Data) {
 
@@ -17,13 +18,9 @@ foreach($line in $Data) {
         $AX = [int]$AX.replace("X+", "")
         $AY = [int]$A[3].replace("Y+","")
 
-        $coordinates += @{
-        AX = $AX
-        AY = $AY
-        }
+        $game['AX'] = $AX
+        $game['AY'] = $AY
 
-        $coordinates
-        Write-Output "Parsed $A -> ($AX,$AY)"
     }
 
     elseif($line.Contains("Button B:"))
@@ -33,12 +30,9 @@ foreach($line in $Data) {
         $BX = [int]$BX.replace("X+", "")
         $BY = [int]$B[3].replace("Y+","")
 
-        $coordinates += @{
-            BX = $BX
-            BY = $BY
-        }
+        $game['BX'] = $BX
+        $game['BY'] = $BY
 
-        Write-Output "Parsed $B -> ($BX, $BY)"
     }
 
     elseif($line.Contains("Prize:"))
@@ -47,22 +41,38 @@ foreach($line in $Data) {
         $PX = $P[1] -replace ",",""
         $PX = [int]$PX.replace("X=","")
         $PY = [int]($P[2] -replace "Y=","")
-        $coordinates += @{
-            PX = $PX
-            PY = $PY
-        }
-        Write-Output "Parsed $P -> ($PX, $PY)"
+
+        $game['PX'] = $PX
+        $game['PY'] = $PY
+
     }
 
-    elseif($line -eq "")
+    elseif($line.Trim() -eq "")
     {
-        Write-Output "
------- Processing Game ------
-        "
-        $coordinates
+        $game_count++
+        Write-Output "------ Processing Game #$game_count------"
+        $game
+
+        $a_button_presses = ($game['PX'] * $game['BY'] - $game['PY'] * $game['BX']) / ($game['AX'] * $game['BY'] - $game['AY'] * $game['BX'])
+        $b_button_presses = ($game['PX'] - $game['AX'] * $a_button_presses) / $game['BX']
+
+
+        $a = $a_button_presses % 1
+        $b = $b_button_presses % 1
+
+        if ($a -eq $b)
+        {
+            if ($b -eq 0)
+            {
+                $total_button_presses += ($a_button_presses * 3) + $b_button_presses
+            }
+        }
+
+
         # reset after processing
-        $completed_configs += $coordinates
-        $coordinates = @()
+        $game = @{}
     }
 
 }
+
+Write-Output "Part One Answer = $total_button_presses"
