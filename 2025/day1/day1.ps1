@@ -5,7 +5,6 @@ Advent of Code 2025 Day 1
 .DESCRIPTION
 Sweet puzzles to help Santa's elves save Christmas!
 URL: https://adventofcode.com/2025/day/1
-
 #>
 
 function Get-TableData {
@@ -101,7 +100,7 @@ function Get-PartTwoAnswer {
 
 # Main Script
 
-Write-Host "=== Advent of Code (2025, Day 1)"
+Write-Output "=== Advent of Code (2025, Day 1)"
 $samplePath = '.\sample.txt'
 $inputPath = '.\input.txt'
 
