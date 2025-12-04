@@ -1,90 +1,79 @@
 <#
 .SYNOPSIS
-Advent of Code 2025 Day 3
+Advent of Code 2025, Day 3
+
+.NOTES
+- Joltage is a value from 1 to 9
 #>
 
-function Get-JoltagePartOne {
+function Get-HighestBattery {
     param(
-        [Parameter(Mandatory = $true)]
-        [string]$batteryBank
+        [string]$subString,
+        [int]$Idx
     )
-    
-    $bankLen = $batteryBank.Length
-    $joltage = 0
 
-    for ($i = 0; $i -lt ($bankLen - 1); $i++) {
-        $firstNum = [int]([string]$batteryBank[$i])
+    $returnIndex = 0
+    $HighestBattery = 0
+    $strLen = $subString.Length
+
+    for ($i = 0; $i -lt ($strLen - $Idx); $i++) {
+
+        # grab character, convert to int
+        $currChar = $subString[$i]
+        $currCharInt = [int][string]$currChar
+   
+        # compare current int to highest battery
+        if ($currCharInt -gt $HighestBattery) {
+            $HighestBattery = $currCharInt
+            $returnIndex = $i    
+        }
+    }  
+
+    return @(
+        [string]$HighestBattery, $returnIndex
+    )
+}
+
+function Get-MaxJoltage {
+    param(
+        [int]$Iterations,
+        [string[]]$BatteryBanks
+    )
+   
+    $Iterations--
+    $Answer = 0
+    
+    $BatteryBanks | ForEach-Object {
+        $subString = $_    # store original string
+        $AnswerStr = ""    # place holder for final result
+        $reverseIdxRange = ($Iterations..0)
         
-        for ($j = $i + 1; $j -lt $bankLen; $j++) {
-            $secondNum = [int]([string]$batteryBank[$j])
-            $curr = [int]([string]$firstNum + [string]$secondNum)
+        # loop through each index and return the highest battery in current bank snippet
+        # then set subString to the original string minus the previous index
+        $reverseIdxRange | ForEach-Object {
+
+            # retrieve @(highest number string, index) in current battery bank
+            $results = Get-HighestBattery -subString $subString -Idx $_
             
-            if ($curr -gt $joltage) {
-                $joltage = $curr
-            }
+            # assign number string to answer string
+            $AnswerStr += $results[0]
+
+            # increment index from previous subString to create new subString
+            $subString = $subString.Substring(($results[1] + 1))
         }
+
+        $Answer += [long]$AnswerStr 
     }
-    
-    return $joltage
-}
-
-function Get-JoltagePartTwo {
-    param(
-        [Parameter(Mandatory = $true)]
-        [string]$batteryBank
-    )
-
-    $joltageStr = ""
-    $maxNums = 12
-    $bankLen = $batteryBank.Length
-
-    # create objects to store digit and index
-    $numbersInfo = 0..($bankLen - 1) | ForEach-Object {
-        [PSCustomObject]@{
-            Index  = $_
-            Number = [int][string]$batteryBank[$_]
-        }
-    }
-
-    # sort array of objects by number
-    $numbersInfo = $numbersInfo | Sort-Object Number -Descending
-
-    Write-Host "[info] $($numbersInfo | Out-String)"
-
-    return [int]$joltageStr
-}
-
-function Get-TotalJoltage {
-    param(
-        [Object[]]$Batteries,
-        [switch]$first
-    )
-
-    $totalJoltage = 0
-
-    foreach ($batteryBank in $Batteries) {
-        if ($first) {
-            $joltage = Get-JoltagePartOne $batteryBank
-            $totalJoltage += $joltage
-        }
-        else {
-            $joltage = Get-JoltagePartTwo $batteryBank
-            $totalJoltage += $joltage
-        }
-    }
-
-    return $totalJoltage
+    return $Answer
 }
 
 # Main Script
 $sample = ".\sample.txt"
 $input = ".\input.txt"
+$data = Get-Content -Path $input
 
-# get data from file
-$data = Get-Content -Path $sample
+$partOne = Get-MaxJoltage 2 $data
+$partTwo = Get-MaxJoltage 12 $data
 
-# $partOneTime = Measure-Command { $partOne = Get-TotalJoltage $data -first }
-# Write-Host "[+] Part One: $partOne ($($partOneTime.TotalSeconds) seconds)"
-
-$partTwoTime = Measure-Command { $partTwo = Get-TotalJoltage $data }
-Write-Host "[+] Part Two: $partTwo ($($partTwoTime.TotalSeconds) seconds)"
+Write-Host "PartOne: $partOne"
+Write-Host "PartTwo: $partTwo"
