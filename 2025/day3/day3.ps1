@@ -72,8 +72,8 @@ $sample = ".\sample.txt"
 $input = ".\input.txt"
 $data = Get-Content -Path $input
 
-$partOne = Get-MaxJoltage 2 $data
-$partTwo = Get-MaxJoltage 12 $data
+$partOne = Get-MaxJoltage -Iterations 2 -BatteryBanks $data
+$partTwo = Get-MaxJoltage -Iterations 12 -BatteryBanks $data
 
 Write-Host "PartOne: $partOne"
 Write-Host "PartTwo: $partTwo"
