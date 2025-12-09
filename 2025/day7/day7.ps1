@@ -2,6 +2,9 @@
 .SYNOPSIS
 Advent of Code 2025, Day 7
 #>
+
+$Global:TimelineMemo = @{}
+
 function Show-Map {
     param(
         [Object[]]$Array
@@ -91,6 +94,70 @@ function Get-PartOne {
     return $answer
 }
 
+function Get-Timelines {
+    param(
+        [Object[]]$Array,
+        [int]$row,
+        [int]$col
+    )
+
+    $numRows = $Array.Count
+    $numCols = $Array[0].Count
+    $key = "$row,$col"
+
+    # memoization lookup
+    if ($TimelineMemo.ContainsKey($key)) {
+        return $TimelineMemo[$key]
+    }
+
+    # advance position down
+    $nr = $row + 1
+    $nc = $col
+
+    # hit bottom of map
+    if ($nr -ge $numRows) {
+        $TimelineMemo[$key] = 1
+        return 1
+    }
+
+    $current = $Array[$nr][$nc]
+    $totalTimelines = 0
+
+    switch ($current) {
+        '.' {
+            # continue down
+            $totalTimelines += Get-Timelines -Array $Array -row $nr -col $nc
+        }
+        '^' {
+            # go left
+            if ($nc - 1 -ge 0) {
+                $totalTimelines += Get-Timelines -Array $Array -row $nr -col ($nc - 1)
+            }
+            
+            # go right
+            if ($nc + 1 -lt $numCols) {
+                $totalTimelines += Get-Timelines -Array $Array -row $nr -col ($nc + 1)
+            }
+        }
+    }
+
+    # store current position's timeline count in memo
+    $TimelineMemo[$key] = $totalTimelines
+    return $totalTimelines
+}
+
+function Get-PartTwo {
+    param(
+        [Object[]]$Array
+    )
+
+    # get location of starting point
+    $firstRow = -join $Array[0]
+    $sc = $firstRow.IndexOf('S')
+
+    return Get-Timelines -Array $Array -row 0 -col $sc
+}
+
 $sampleFile = ".\sample.txt"
 $inputFile = ".\input.txt"
 
@@ -98,3 +165,6 @@ $Data = Get-Content -Path $inputFile | ForEach-Object { , $_.ToCharArray() }
 
 $partOne = Get-PartOne -Array $Data
 Write-Host "Part One: $partOne"
+
+$partTwo = Get-PartTwo -Array $Data
+Write-Host "Part Two: $partTwo"
