@@ -1,7 +1,7 @@
 <#
 .SYNOPSIS
 Union Find - Disjoint Set Union
-- Disjoing meaning non-overlapping sets
+- Disjoint meaning non-overlapping sets
 - maintains a collection of elements split into disjoint sets
 #>
 
