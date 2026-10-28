@@ -7,7 +7,6 @@ My solutions to [Advent of Code](https://adventofcode.com), the yearly set of pr
 | 2015 | [2015](2015) | Python |
 | 2016 | [2016](2016) | Python |
 | 2017 | [2017](2017) | Python |
-| 2018 | [2018](2018) | Python |
 | 2019 | [2019](2019) | Python |
 | 2020 | [2020](2020) | Python |
 | 2021 | [2021](2021) | Python |
